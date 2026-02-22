@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RentMS — Tenant Management System</title>
+  <title>RentTrack — Tenant Management System</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
 </head>
@@ -13,7 +13,7 @@
   <nav class="landing-nav">
     <div class="landing-logo">
       <div class="landing-logo-icon">🏢</div>
-      RentMS
+      RentTrack
     </div>
     <div class="landing-nav-links">
       <a href="#features">Features</a>
@@ -25,20 +25,19 @@
   <!-- HERO SECTION -->
   <section class="hero" id="home">
     <div class="hero-content">
-      <div class="hero-eyebrow">🏡 Property Management Platform</div>
+      <div class="hero-eyebrow">🏡 Your Rental, Simplified</div>
       <h1 class="hero-title">
-        Manage Your <span>Properties</span><br/>
-        Smarter & Faster
+        Track Your Rent &<br/><span>Stay Informed</span>
       </h1>
       <p class="hero-subtitle">
-        A complete tenant management system with automated rent generation, electricity billing, complaint tracking, and real-time payment status — all in one place.
+        View your monthly bills, track electricity usage, check payment history, and raise complaints — all from one simple dashboard built for tenants like you.
       </p>
       <div class="hero-actions">
         <button class="btn btn-primary btn-lg" onclick="scrollToLogin()">
-          🚀 Login to Dashboard
+          🚀 Login to Your Dashboard
         </button>
         <button class="btn btn-secondary btn-lg" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
-          ✦ See Features
+          ✦ See What You Can Do
         </button>
       </div>
     </div>
@@ -47,21 +46,21 @@
       <div class="hero-illustration">
         <div class="hero-building">🏢</div>
         <div class="hero-mini-cards">
-          <div class="hero-mini-card">
-            <div class="hero-mini-card-label">Active Tenants</div>
-            <div class="hero-mini-card-value">48</div>
-          </div>
           <div class="hero-mini-card highlight">
-            <div class="hero-mini-card-label">Collection</div>
-            <div class="hero-mini-card-value">₹1.2L</div>
+            <div class="hero-mini-card-label">Current Bill</div>
+            <div class="hero-mini-card-value">₹8,500</div>
           </div>
           <div class="hero-mini-card">
-            <div class="hero-mini-card-label">Complaints</div>
-            <div class="hero-mini-card-value">3 Open</div>
+            <div class="hero-mini-card-label">Status</div>
+            <div class="hero-mini-card-value">✅ Paid</div>
           </div>
           <div class="hero-mini-card">
-            <div class="hero-mini-card-label">Paid This Month</div>
-            <div class="hero-mini-card-value">92%</div>
+            <div class="hero-mini-card-label">Complaint</div>
+            <div class="hero-mini-card-value">Resolved</div>
+          </div>
+          <div class="hero-mini-card">
+            <div class="hero-mini-card-label">Next Due</div>
+            <div class="hero-mini-card-value">Mar 1</div>
           </div>
         </div>
       </div>
@@ -71,40 +70,40 @@
   <!-- FEATURES SECTION -->
   <section class="features" id="features">
     <div class="section-center">
-      <div class="section-eyebrow">Why Choose RentMS</div>
-      <h2 class="section-heading">Everything You Need to Run<br/>Your Rental Business</h2>
-      <p class="section-desc">From tenant onboarding to rent collection — RentMS handles it all.</p>
+      <div class="section-eyebrow">What RentTrack Does For You</div>
+      <h2 class="section-heading">Everything a Tenant Needs,<br/>In One Place</h2>
+      <p class="section-desc">No more confusion about your bills or chasing your landlord for updates.</p>
     </div>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">👤</div>
-        <h3 class="feature-title">Tenant Management</h3>
-        <p class="feature-desc">Add tenants, manage profiles, set base rent, and keep all contact info organized in one place.</p>
+        <div class="feature-icon">💰</div>
+        <h3 class="feature-title">View Your Monthly Bill</h3>
+        <p class="feature-desc">See your current month's rent, electricity charges, and total amount due — clearly broken down for you.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">⚡</div>
-        <h3 class="feature-title">Electricity Billing</h3>
-        <p class="feature-desc">Enter meter readings and let the system automatically calculate electricity charges at ₹10/unit.</p>
+        <h3 class="feature-title">Electricity Breakdown</h3>
+        <p class="feature-desc">Know exactly how many units you consumed and what you're being charged — transparent and fair billing every month.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">💰</div>
-        <h3 class="feature-title">Rent Generation</h3>
-        <p class="feature-desc">Generate monthly rent bills combining base rent and electricity. Mark as Paid or Unpaid with one click.</p>
+        <div class="feature-icon">📜</div>
+        <h3 class="feature-title">Payment History</h3>
+        <p class="feature-desc">Access your complete rent payment history anytime. Know what's paid and what's pending at a glance.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📋</div>
-        <h3 class="feature-title">Complaint Tracking</h3>
-        <p class="feature-desc">Tenants raise complaints; admins resolve them. Full status tracking from Pending to Resolved.</p>
+        <h3 class="feature-title">Raise Complaints</h3>
+        <p class="feature-desc">Submit maintenance or other complaints easily. Track their status from Pending to Resolved and see admin responses.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3 class="feature-title">Live Dashboard</h3>
-        <p class="feature-desc">Real-time stats on collection, pending dues, active tenants, and complaint status at a glance.</p>
+        <div class="feature-icon">🔔</div>
+        <h3 class="feature-title">Payment Status</h3>
+        <p class="feature-desc">Always know if your rent is marked as Paid or Unpaid. No more guessing or miscommunication with your landlord.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔒</div>
-        <h3 class="feature-title">Role-Based Access</h3>
-        <p class="feature-desc">Admin and Tenant roles with JWT authentication. Tenants see only their own data, always.</p>
+        <h3 class="feature-title">Your Data, Private</h3>
+        <p class="feature-desc">Your information is secure and private. You only see your own bills and complaints — nothing else.</p>
       </div>
     </div>
   </section>
@@ -115,7 +114,7 @@
       <div class="login-logo">
         <div style="font-size:2.5rem;margin-bottom:8px">🏢</div>
         <h2>Welcome Back</h2>
-        <p>Sign in to your RentMS account</p>
+        <p>Sign in to your RentTrack account</p>
       </div>
 
       <!-- Role Tabs -->
@@ -155,7 +154,7 @@
 
       <div class="login-footer">
         <p style="color:var(--text-muted)">
-          Default Admin: <strong style="color:var(--gold)">admin@rentms.com</strong> / <strong style="color:var(--gold)">admin123</strong>
+          Contact your property manager if you don't have login credentials.
         </p>
       </div>
     </div>
@@ -165,9 +164,9 @@
   <footer class="landing-footer">
     <div class="landing-logo">
       <div class="landing-logo-icon">🏢</div>
-      RentMS
+      RentTrack
     </div>
-    <p>© 2024 RentMS. All rights reserved. Built with ❤️ for property managers.</p>
+    <p>© 2024 RentTrack. All rights reserved. Built for tenants & property managers.</p>
   </footer>
 
   <!-- Toast Container -->

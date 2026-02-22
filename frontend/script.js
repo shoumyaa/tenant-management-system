@@ -14,7 +14,7 @@ const CONFIG = {
       return 'http://localhost:5000/api';
     }
     // When deployed to Netlify, change this to your Render backend URL
-    return 'https://your-rentms-backend.onrender.com/api';
+     return 'https://tenant-management-system-a4x7.onrender.com';
   })()
 };
 

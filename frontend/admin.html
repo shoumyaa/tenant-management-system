@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — RentMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
+</head>
+<body class="dashboard-body">
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <h2>RentMS Admin</h2>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <div class="sidebar-link active" onclick="showSection('dashboard')">
+        <span class="link-icon">📊</span> Dashboard
+      </div>
+      <div class="sidebar-link" onclick="showSection('tenants')">
+        <span class="link-icon">👥</span> Tenants
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Billing</div>
+      <div class="sidebar-link" onclick="showSection('rents')">
+        <span class="link-icon">💰</span> Rent Management
+      </div>
+      <div class="sidebar-link" onclick="showSection('generate')">
+        <span class="link-icon">📄</span> Generate Rent
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Support</div>
+      <div class="sidebar-link" onclick="showSection('complaints')">
+        <span class="link-icon">📋</span> Complaints
+        <span class="sidebar-badge" id="complaintBadge" style="display:none">0</span>
+      </div>
+    </div>
+    <div class="sidebar-section" style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
+      <div class="sidebar-link" onclick="handleLogout()" style="color:var(--red)">
+        <span class="link-icon">🚪</span> Logout
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="navbar-brand">🏢 RentMS <span>/ Admin</span></div>
+    <div class="navbar-right">
+      <div class="navbar-user">
+        <div class="navbar-avatar" id="adminAvatar">A</div>
+        <span id="adminName">Admin</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ===== DASHBOARD SECTION ===== -->
+    <section class="page-section active" id="section-dashboard">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Dashboard</h1>
+          <p class="section-subtitle">Overview of your properties this month</p>
+        </div>
+        <div>
+          <span class="tag" id="currentMonthLabel">—</span>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card gold">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Tenants</div>
+            <div class="stat-value" id="stat-totalTenants">—</div>
+            <div class="stat-sub" id="stat-activeTenants">— active</div>
+          </div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-label">This Month Collected</div>
+            <div class="stat-value" id="stat-monthCollection">—</div>
+            <div class="stat-sub" id="stat-paidCount">— paid</div>
+          </div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-content">
+            <div class="stat-label">Pending Amount</div>
+            <div class="stat-value" id="stat-monthPending">—</div>
+            <div class="stat-sub" id="stat-unpaidCount">— unpaid</div>
+          </div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Collection</div>
+            <div class="stat-value" id="stat-totalCollection">—</div>
+            <div class="stat-sub">all time</div>
+          </div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">📋</div>
+          <div class="stat-content">
+            <div class="stat-label">Open Complaints</div>
+            <div class="stat-value" id="stat-complaints">—</div>
+            <div class="stat-sub">pending resolution</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Rents -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">This Month's Rent Status</h3>
+          <button class="btn btn-secondary btn-sm" onclick="showSection('rents')">View All</button>
+        </div>
+        <div class="table-wrapper">
+          <table id="dashboardRentTable">
+            <thead>
+              <tr>
+                <th>Tenant</th>
+                <th>Unit</th>
+                <th>Base Rent</th>
+                <th>Electricity</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardRentBody">
+              <tr><td colspan="7" class="text-center text-muted" style="padding:30px">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TENANTS SECTION ===== -->
+    <section class="page-section" id="section-tenants">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Tenants</h1>
+          <p class="section-subtitle">Manage all your tenants</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddTenantModal()">+ Add Tenant</button>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" class="form-control search-input" placeholder="🔍 Search by name, email, phone..." id="tenantSearch" oninput="filterTenants()" />
+      </div>
+
+      <div class="table-card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Unit</th>
+                <th>Base Rent</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tenantsBody">
+              <tr><td colspan="7" class="text-center text-muted" style="padding:30px">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RENT MANAGEMENT SECTION ===== -->
+    <section class="page-section" id="section-rents">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Rent Management</h1>
+          <p class="section-subtitle">View and manage all rent records</p>
+        </div>
+        <button class="btn btn-primary" onclick="showSection('generate')">+ Generate Rent</button>
+      </div>
+
+      <div class="filter-bar">
+        <input type="month" class="form-control" id="rentMonthFilter" onchange="loadAllRents()" />
+        <select class="form-control" id="rentStatusFilter" onchange="loadAllRents()">
+          <option value="">All Status</option>
+          <option value="Paid">Paid</option>
+          <option value="Unpaid">Unpaid</option>
+        </select>
+        <div style="margin-left:auto; display:flex; gap:12px; align-items:center">
+          <div class="tag">Collected: <strong id="filterCollection" style="color:var(--green)">₹0</strong></div>
+          <div class="tag">Pending: <strong id="filterPending" style="color:var(--red)">₹0</strong></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Tenant</th>
+                <th>Month</th>
+                <th>Base Rent</th>
+                <th>Units</th>
+                <th>Electricity</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rentsBody">
+              <tr><td colspan="8" class="text-center text-muted" style="padding:30px">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GENERATE RENT SECTION ===== -->
+    <section class="page-section" id="section-generate">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Generate Monthly Rent</h1>
+          <p class="section-subtitle">Create rent bills with electricity for a tenant</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Rent Details</h3>
+          </div>
+          <form id="generateRentForm" onsubmit="handleGenerateRent(event)">
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Select Tenant</label>
+                <select class="form-control" id="gen-tenant" required onchange="prefillBaseRent()">
+                  <option value="">— Choose Tenant —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Billing Month</label>
+                <input type="month" class="form-control" id="gen-month" required />
+              </div>
+              <div class="form-group">
+                <label>Base Rent (₹)</label>
+                <input type="number" class="form-control" id="gen-baseRent" placeholder="e.g. 8000" required min="0" />
+              </div>
+              <hr class="divider" />
+              <div style="font-size:0.82rem;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.05em">⚡ Electricity Bill</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Previous Unit</label>
+                  <input type="number" class="form-control" id="gen-prevUnit" placeholder="e.g. 1200" min="0" oninput="calcElecPreview()" />
+                </div>
+                <div class="form-group">
+                  <label>Current Unit</label>
+                  <input type="number" class="form-control" id="gen-currUnit" placeholder="e.g. 1265" min="0" oninput="calcElecPreview()" />
+                </div>
+              </div>
+              <div class="input-note">Rate: ₹10 per unit consumed</div>
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="generateBtn">Generate Bill</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Live Preview -->
+        <div>
+          <div class="card" id="billPreview">
+            <div class="card-header">
+              <h3 class="card-title">Bill Preview</h3>
+              <span class="badge badge-unpaid">Unpaid</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-secondary)">Base Rent</span>
+                <strong id="prev-base">₹0</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-secondary)">Units Consumed</span>
+                <strong id="prev-units">0 units</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-secondary)">Electricity (×₹10)</span>
+                <strong id="prev-elec">₹0</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:14px;background:var(--gold-dim);border-radius:var(--radius-md);border:1px solid rgba(212,175,55,0.3)">
+                <span style="color:var(--gold);font-weight:600">Total Amount</span>
+                <strong style="color:var(--gold);font-family:var(--font-display);font-size:1.5rem" id="prev-total">₹0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COMPLAINTS SECTION ===== -->
+    <section class="page-section" id="section-complaints">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Complaints</h1>
+          <p class="section-subtitle">Review and resolve tenant complaints</p>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <select class="form-control" id="complaintStatusFilter" onchange="loadComplaints()">
+          <option value="">All Complaints</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+
+      <div class="complaints-grid" id="complaintsGrid">
+        <div class="empty-state">
+          <div class="spinner" style="margin:0 auto"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Add Tenant Modal -->
+  <div class="modal-overlay" id="addTenantModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Tenant</h3>
+        <button class="modal-close" onclick="closeModal('addTenantModal')">✕</button>
+      </div>
+      <form onsubmit="handleAddTenant(event)">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" class="form-control" id="t-name" placeholder="John Doe" required />
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" class="form-control" id="t-phone" placeholder="9876543210" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" class="form-control" id="t-email" placeholder="john@example.com" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-control" id="t-password" placeholder="Min. 6 characters" required minlength="6" />
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Unit / Flat No.</label>
+              <input type="text" class="form-control" id="t-unit" placeholder="e.g. A-101" />
+            </div>
+            <div class="form-group">
+              <label>Base Rent (₹)</label>
+              <input type="number" class="form-control" id="t-baseRent" placeholder="e.g. 8000" min="0" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('addTenantModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="addTenantBtn">Add Tenant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Tenant Modal -->
+  <div class="modal-overlay" id="editTenantModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Tenant</h3>
+        <button class="modal-close" onclick="closeModal('editTenantModal')">✕</button>
+      </div>
+      <form onsubmit="handleEditTenant(event)">
+        <input type="hidden" id="edit-tenantId" />
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" class="form-control" id="edit-name" required />
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" class="form-control" id="edit-phone" required />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Unit / Flat No.</label>
+              <input type="text" class="form-control" id="edit-unit" />
+            </div>
+            <div class="form-group">
+              <label>Base Rent (₹)</label>
+              <input type="number" class="form-control" id="edit-baseRent" min="0" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control" id="edit-isActive">
+              <option value="true">Active</option>
+              <option value="false">Deactivated</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editTenantModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Rent Modal -->
+  <div class="modal-overlay" id="editRentModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Update Rent Record</h3>
+        <button class="modal-close" onclick="closeModal('editRentModal')">✕</button>
+      </div>
+      <form onsubmit="handleEditRent(event)">
+        <input type="hidden" id="edit-rentId" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control" id="edit-rentStatus">
+              <option value="Unpaid">Unpaid</option>
+              <option value="Paid">Paid</option>
+            </select>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Previous Unit</label>
+              <input type="number" class="form-control" id="edit-prevUnit" min="0" oninput="calcEditElec()" />
+            </div>
+            <div class="form-group">
+              <label>Current Unit</label>
+              <input type="number" class="form-control" id="edit-currUnit" min="0" oninput="calcEditElec()" />
+            </div>
+          </div>
+          <div style="background:var(--gold-dim);border:1px solid rgba(212,175,55,0.25);border-radius:var(--radius-sm);padding:10px 14px">
+            <small style="color:var(--text-muted)">Electricity Preview:</small>
+            <div style="color:var(--gold);font-weight:600;margin-top:4px" id="edit-elecPreview">₹0 (0 units)</div>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea class="form-control" id="edit-rentNotes" rows="2" placeholder="Optional note..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editRentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resolve Complaint Modal -->
+  <div class="modal-overlay" id="resolveComplaintModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Update Complaint</h3>
+        <button class="modal-close" onclick="closeModal('resolveComplaintModal')">✕</button>
+      </div>
+      <form onsubmit="handleResolveComplaint(event)">
+        <input type="hidden" id="resolve-complaintId" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Update Status</label>
+            <select class="form-control" id="resolve-status">
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Admin Note</label>
+            <textarea class="form-control" id="resolve-note" rows="3" placeholder="Add a note for the tenant..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('resolveComplaintModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color:var(--red)">⚠️ Confirm Delete</h3>
+        <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color:var(--text-secondary)" id="deleteModalMsg">Are you sure?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+  <script>
+    initAdminDashboard();
+  </script>
+</body>
+</html>

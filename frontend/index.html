@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RentMS — Tenant Management System</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
+</head>
+<body class="landing-body">
+
+  <!-- NAVBAR -->
+  <nav class="landing-nav">
+    <div class="landing-logo">
+      <div class="landing-logo-icon">🏢</div>
+      RentMS
+    </div>
+    <div class="landing-nav-links">
+      <a href="#features">Features</a>
+      <a href="#login">Login</a>
+      <button class="btn btn-primary btn-sm" onclick="scrollToLogin()">Get Started →</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-eyebrow">🏡 Property Management Platform</div>
+      <h1 class="hero-title">
+        Manage Your <span>Properties</span><br/>
+        Smarter & Faster
+      </h1>
+      <p class="hero-subtitle">
+        A complete tenant management system with automated rent generation, electricity billing, complaint tracking, and real-time payment status — all in one place.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="scrollToLogin()">
+          🚀 Login to Dashboard
+        </button>
+        <button class="btn btn-secondary btn-lg" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
+          ✦ See Features
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-illustration">
+        <div class="hero-building">🏢</div>
+        <div class="hero-mini-cards">
+          <div class="hero-mini-card">
+            <div class="hero-mini-card-label">Active Tenants</div>
+            <div class="hero-mini-card-value">48</div>
+          </div>
+          <div class="hero-mini-card highlight">
+            <div class="hero-mini-card-label">Collection</div>
+            <div class="hero-mini-card-value">₹1.2L</div>
+          </div>
+          <div class="hero-mini-card">
+            <div class="hero-mini-card-label">Complaints</div>
+            <div class="hero-mini-card-value">3 Open</div>
+          </div>
+          <div class="hero-mini-card">
+            <div class="hero-mini-card-label">Paid This Month</div>
+            <div class="hero-mini-card-value">92%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="features" id="features">
+    <div class="section-center">
+      <div class="section-eyebrow">Why Choose RentMS</div>
+      <h2 class="section-heading">Everything You Need to Run<br/>Your Rental Business</h2>
+      <p class="section-desc">From tenant onboarding to rent collection — RentMS handles it all.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">👤</div>
+        <h3 class="feature-title">Tenant Management</h3>
+        <p class="feature-desc">Add tenants, manage profiles, set base rent, and keep all contact info organized in one place.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title">Electricity Billing</h3>
+        <p class="feature-desc">Enter meter readings and let the system automatically calculate electricity charges at ₹10/unit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3 class="feature-title">Rent Generation</h3>
+        <p class="feature-desc">Generate monthly rent bills combining base rent and electricity. Mark as Paid or Unpaid with one click.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3 class="feature-title">Complaint Tracking</h3>
+        <p class="feature-desc">Tenants raise complaints; admins resolve them. Full status tracking from Pending to Resolved.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Live Dashboard</h3>
+        <p class="feature-desc">Real-time stats on collection, pending dues, active tenants, and complaint status at a glance.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3 class="feature-title">Role-Based Access</h3>
+        <p class="feature-desc">Admin and Tenant roles with JWT authentication. Tenants see only their own data, always.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN SECTION -->
+  <section class="login-section" id="login">
+    <div class="login-box">
+      <div class="login-logo">
+        <div style="font-size:2.5rem;margin-bottom:8px">🏢</div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to your RentMS account</p>
+      </div>
+
+      <!-- Role Tabs -->
+      <div class="login-tab-group" style="margin-bottom:20px">
+        <button class="login-tab active" onclick="setLoginRole('admin')" id="tab-admin">🔑 Admin</button>
+        <button class="login-tab" onclick="setLoginRole('tenant')" id="tab-tenant">🏠 Tenant</button>
+      </div>
+
+      <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="loginEmail"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="loginPassword"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+        <div id="loginError" style="display:none; color:var(--red); font-size:0.85rem; background:var(--red-dim); padding:10px 14px; border-radius:var(--radius-sm); border:1px solid rgba(231,76,60,0.25)"></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn">
+          Sign In →
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <p style="color:var(--text-muted)">
+          Default Admin: <strong style="color:var(--gold)">admin@rentms.com</strong> / <strong style="color:var(--gold)">admin123</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="landing-logo">
+      <div class="landing-logo-icon">🏢</div>
+      RentMS
+    </div>
+    <p>© 2024 RentMS. All rights reserved. Built with ❤️ for property managers.</p>
+  </footer>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+  <script>
+    // Check if already logged in
+    const existingToken = localStorage.getItem('rms_token');
+    const existingUser = JSON.parse(localStorage.getItem('rms_user') || 'null');
+    if (existingToken && existingUser) {
+      if (existingUser.role === 'admin') window.location.href = 'admin.html';
+      else window.location.href = 'tenant.html';
+    }
+
+    let selectedRole = 'admin';
+
+    function setLoginRole(role) {
+      selectedRole = role;
+      document.getElementById('tab-admin').classList.toggle('active', role === 'admin');
+      document.getElementById('tab-tenant').classList.toggle('active', role === 'tenant');
+    }
+
+    function scrollToLogin() {
+      document.getElementById('login').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errorEl = document.getElementById('loginError');
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Signing In...';
+      errorEl.style.display = 'none';
+
+      try {
+        const data = await API.post('/auth/login', { email, password });
+        if (data.success) {
+          localStorage.setItem('rms_token', data.token);
+          localStorage.setItem('rms_user', JSON.stringify(data.user));
+          showToast('Login successful! Redirecting...', 'success');
+          setTimeout(() => {
+            if (data.user.role === 'admin') window.location.href = 'admin.html';
+            else window.location.href = 'tenant.html';
+          }, 700);
+        }
+      } catch (err) {
+        errorEl.textContent = err.message || 'Login failed. Please try again.';
+        errorEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In →';
+      }
+    }
+  </script>
+</body>
+</html>

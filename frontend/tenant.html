@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tenant Dashboard — RentMS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>" />
+</head>
+<body class="dashboard-body">
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <h2>RentMS</h2>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Dashboard</div>
+      <div class="sidebar-link active" onclick="showSection('dashboard')">
+        <span class="link-icon">🏠</span> Overview
+      </div>
+      <div class="sidebar-link" onclick="showSection('rent')">
+        <span class="link-icon">💰</span> My Rent
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Support</div>
+      <div class="sidebar-link" onclick="showSection('complaints')">
+        <span class="link-icon">📋</span> My Complaints
+      </div>
+      <div class="sidebar-link" onclick="showSection('new-complaint')">
+        <span class="link-icon">✏️</span> Raise Complaint
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-link" onclick="handleLogout()" style="color:var(--red)">
+        <span class="link-icon">🚪</span> Logout
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="navbar-brand">🏢 RentMS <span>/ Tenant</span></div>
+    <div class="navbar-right">
+      <div class="navbar-user">
+        <div class="navbar-avatar" id="tenantAvatar">T</div>
+        <span id="tenantName">Tenant</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ===== DASHBOARD OVERVIEW ===== -->
+    <section class="page-section active" id="section-dashboard">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Welcome Back, <span id="welcomeName" class="text-gold">Tenant</span>!</h1>
+          <p class="section-subtitle" id="tenantUnit">Your rental dashboard</p>
+        </div>
+        <span class="tag" id="dashMonth">—</span>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+        <div class="stat-card gold">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Paid</div>
+            <div class="stat-value" id="td-totalPaid">—</div>
+            <div class="stat-sub" id="td-paidCount">— payments</div>
+          </div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-content">
+            <div class="stat-label">Unpaid Bills</div>
+            <div class="stat-value" id="td-unpaidCount">—</div>
+            <div class="stat-sub">pending</div>
+          </div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">📋</div>
+          <div class="stat-content">
+            <div class="stat-label">Open Complaints</div>
+            <div class="stat-value" id="td-complaints">—</div>
+            <div class="stat-sub" id="td-resolvedCount">— resolved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Month Bill -->
+      <div id="currentBillContainer" style="margin-bottom:24px">
+        <h3 class="font-display" style="margin-bottom:14px;font-size:1.1rem;color:var(--text-secondary)">This Month's Bill</h3>
+        <div class="bill-card" id="currentBillCard">
+          <div class="bill-card-header">
+            <div>
+              <div class="bill-card-month" id="billMonth">—</div>
+              <div class="bill-card-tenant" id="billTenantName">—</div>
+            </div>
+            <div id="billStatus">—</div>
+          </div>
+          <div class="bill-breakdown">
+            <div class="bill-item">
+              <div class="bill-item-label">Base Rent</div>
+              <div class="bill-item-value" id="billBaseRent">₹—</div>
+            </div>
+            <div class="bill-item">
+              <div class="bill-item-label">⚡ Electricity</div>
+              <div class="bill-item-value" id="billElectricity">₹—</div>
+            </div>
+            <div class="bill-item">
+              <div class="bill-item-label">Units Used</div>
+              <div class="bill-item-value" id="billUnits">—</div>
+            </div>
+            <div class="bill-item">
+              <div class="bill-item-label">Rate / Unit</div>
+              <div class="bill-item-value">₹10</div>
+            </div>
+          </div>
+          <div class="bill-total">
+            <span class="bill-total-label">Total Amount Due</span>
+            <span class="bill-total-value" id="billTotal">₹—</span>
+          </div>
+        </div>
+        <div id="noBillMsg" style="display:none" class="card" style="text-align:center;padding:40px">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">No bill generated yet</div>
+            <div class="empty-sub">Your bill for this month hasn't been generated. Contact your admin.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Complaints -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Recent Complaints</h3>
+          <button class="btn btn-secondary btn-sm" onclick="showSection('complaints')">View All</button>
+        </div>
+        <div id="dashComplaintsGrid" class="complaints-grid" style="margin-top:0">
+          <div class="empty-state">
+            <div class="spinner" style="margin:0 auto;width:28px;height:28px;border-width:2px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MY RENT SECTION ===== -->
+    <section class="page-section" id="section-rent">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">My Rent History</h1>
+          <p class="section-subtitle">All your rent bills</p>
+        </div>
+      </div>
+
+      <div class="rent-history" id="rentHistoryList">
+        <div class="empty-state">
+          <div class="spinner" style="margin:0 auto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COMPLAINTS SECTION ===== -->
+    <section class="page-section" id="section-complaints">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">My Complaints</h1>
+          <p class="section-subtitle">Track your submitted complaints</p>
+        </div>
+        <button class="btn btn-primary" onclick="showSection('new-complaint')">+ New Complaint</button>
+      </div>
+
+      <div class="complaints-grid" id="myComplaintsGrid">
+        <div class="empty-state">
+          <div class="spinner" style="margin:0 auto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NEW COMPLAINT SECTION ===== -->
+    <section class="page-section" id="section-new-complaint">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Raise a Complaint</h1>
+          <p class="section-subtitle">Submit your issue to the admin</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
+        <div class="card">
+          <form id="complaintForm" onsubmit="handleComplaintSubmit(event)">
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Category</label>
+                <select class="form-control" id="c-category" required>
+                  <option value="">— Select Category —</option>
+                  <option value="Water">💧 Water</option>
+                  <option value="Electricity">⚡ Electricity</option>
+                  <option value="Repair">🔧 Repair</option>
+                  <option value="Plumbing">🚿 Plumbing</option>
+                  <option value="Security">🔒 Security</option>
+                  <option value="Cleaning">🧹 Cleaning</option>
+                  <option value="Other">📌 Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Priority</label>
+                <select class="form-control" id="c-priority">
+                  <option value="Low">🟢 Low</option>
+                  <option value="Medium" selected>🟡 Medium</option>
+                  <option value="High">🔴 High</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Subject</label>
+                <input type="text" class="form-control" id="c-subject" placeholder="Brief title of the issue" required maxlength="100" />
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" id="c-description" rows="4" placeholder="Describe the issue in detail..." required maxlength="500"></textarea>
+                <div class="input-note">Max 500 characters</div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitComplaintBtn">Submit Complaint</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Info Card -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">How it works</h3>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="background:var(--gold-dim);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">1</div>
+                <div>
+                  <div style="font-weight:600;margin-bottom:4px">Submit Complaint</div>
+                  <div style="font-size:0.87rem;color:var(--text-secondary)">Describe your issue with the appropriate category and priority.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="background:var(--blue-dim);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">2</div>
+                <div>
+                  <div style="font-weight:600;margin-bottom:4px">Admin Reviews</div>
+                  <div style="font-size:0.87rem;color:var(--text-secondary)">Admin will review and update the status to In Progress.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="background:var(--green-dim);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">3</div>
+                <div>
+                  <div style="font-weight:600;margin-bottom:4px">Issue Resolved</div>
+                  <div style="font-size:0.87rem;color:var(--text-secondary)">Once resolved, you'll see the status update and admin's note here.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+  <script>
+    initTenantDashboard();
+  </script>
+</body>
+</html>

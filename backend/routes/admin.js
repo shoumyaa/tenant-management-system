@@ -4,8 +4,73 @@ const User       = require('../models/User');
 const Rent       = require('../models/Rent');
 const Complaint  = require('../models/Complaint');
 const { protect, adminOnly } = require('../middleware/auth');
+const nodemailer = require('nodemailer');
 
 router.use(protect, adminOnly);
+
+// ── EMAIL HELPER ─────────────────────────────────────────────────
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+async function sendRentEmail(tenant, rent) {
+  try {
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const [year, month] = rent.month.split('-');
+    const monthLabel = `${monthNames[parseInt(month) - 1]} ${year}`;
+
+    await transporter.sendMail({
+      from: `"RentTrack" <${process.env.EMAIL_USER}>`,
+      to: tenant.email,
+      subject: `Your Rent for ${monthLabel} is Ready — RentTrack`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;background:#1a1a2e;color:#fff;border-radius:12px;overflow:hidden">
+          <div style="background:#c9a84c;padding:24px;text-align:center">
+            <h1 style="margin:0;font-size:1.5rem">🏢 RentTrack</h1>
+            <p style="margin:4px 0 0;opacity:0.85">Rent Bill Generated</p>
+          </div>
+          <div style="padding:28px">
+            <p style="font-size:1rem">Hi <strong>${tenant.name}</strong>,</p>
+            <p>Your rent bill for <strong>${monthLabel}</strong> has been generated. Here's a summary:</p>
+            <div style="background:#16213e;border-radius:8px;padding:20px;margin:20px 0">
+              <table style="width:100%;border-collapse:collapse">
+                <tr>
+                  <td style="padding:8px 0;color:#aaa">Unit</td>
+                  <td style="padding:8px 0;text-align:right;font-weight:600">${tenant.unit || '—'}</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;color:#aaa">Base Rent</td>
+                  <td style="padding:8px 0;text-align:right;font-weight:600">₹${rent.baseRent.toLocaleString('en-IN')}</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0;color:#aaa">Electricity (${rent.unitsConsumed} units)</td>
+                  <td style="padding:8px 0;text-align:right;font-weight:600">₹${rent.electricityAmount.toLocaleString('en-IN')}</td>
+                </tr>
+                <tr style="border-top:1px solid #333">
+                  <td style="padding:12px 0;font-size:1.1rem;font-weight:700;color:#c9a84c">Total Amount</td>
+                  <td style="padding:12px 0;text-align:right;font-size:1.1rem;font-weight:700;color:#c9a84c">₹${rent.totalAmount.toLocaleString('en-IN')}</td>
+                </tr>
+              </table>
+            </div>
+            <p style="color:#aaa;font-size:0.9rem">Please make sure your payment is done on time. If you have any questions, raise a complaint on your dashboard.</p>
+            <p style="margin-top:24px">— RentTrack Team</p>
+          </div>
+          <div style="background:#111;padding:16px;text-align:center;color:#666;font-size:0.8rem">
+            © 2024 RentTrack. All rights reserved.
+          </div>
+        </div>
+      `
+    });
+    console.log(`✅ Rent email sent to ${tenant.email}`);
+  } catch (err) {
+    console.error('❌ Email send failed:', err.message);
+  }
+}
 
 // ── TENANTS ─────────────────────────────────────────────────────
 
@@ -128,6 +193,10 @@ router.post('/rents/generate', async (req, res) => {
     });
 
     await rent.populate('tenant', 'name email phone unit');
+
+    // Send email notification to tenant
+    sendRentEmail(tenant, rent);
+
     res.status(201).json({ success: true, message: 'Rent generated successfully', rent });
   } catch (err) {
     if (err.code === 11000)

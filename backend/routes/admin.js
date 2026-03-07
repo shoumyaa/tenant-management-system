@@ -124,7 +124,7 @@ router.post('/rents/generate', async (req, res) => {
       baseRent:     parseFloat(baseRent)      || tenant.baseRent || 0,
       previousUnit: parseFloat(previousUnit)  || 0,
       currentUnit:  parseFloat(currentUnit)   || 0,
-      ratePerUnit:  10
+      ratePerUnit:  9
     });
 
     await rent.populate('tenant', 'name email phone unit');
